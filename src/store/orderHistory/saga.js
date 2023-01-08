@@ -1,7 +1,7 @@
 import {takeEvery, put, call} from "redux-saga/effects";
 import {GET_ORDERS, PLACE_ORDER} from "./actionTypes";
 import {getOrdersFail, getOrdersSuccess, placeOrderFail,  updateOrderHistory} from "./actions";
-import {fetchOrderHistory, placeOrder} from "../../api";
+// import {fetchOrderHistory, placeOrder} from "../../api";
 
 function* onGetOrders({payload}) {
   try {

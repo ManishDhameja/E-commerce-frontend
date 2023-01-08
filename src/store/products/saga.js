@@ -1,6 +1,6 @@
 import {takeEvery, put, call} from "redux-saga/effects";
 import {UPDATE_CURRENT_PRODUCT, UPDATE_NEW_ARRIVALS} from "./actionTypes";
-import {fetchProducts, findProductById} from "../../api";
+// import {fetchProducts, findProductById} from "../../api";
 import {
   updateCurrentProductFail,
   updateCurrentProductSuccess,

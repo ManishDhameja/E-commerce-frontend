@@ -1,5 +1,5 @@
 import {call, takeEvery, put} from "redux-saga/effects";
-import {signIn, register, checkIfUserDetailsExist} from "../../api";
+// import {signIn, register, checkIfUserDetailsExist} from "../../api";
 import {checkUserFail, checkUserSuccess, signInFail, signInSuccess} from "./actions";
 import {CHECK_USER, REGISTER, SIGN_IN} from "./actionTypes";
 
