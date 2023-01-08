@@ -1,6 +1,6 @@
 import {call, put, takeEvery} from "redux-saga/effects";
 import {ADD_TO_CART} from "./actionTypes";
-// import {addToCart} from "../../api";
+import {addToCart} from "../../api/api";
 import {addToCartFail, addToCartSuccess} from "./actions";
 
 function* onAddToCart({payload}) {

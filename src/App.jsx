@@ -10,6 +10,11 @@ import Footer from "./components/Footer/footer";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {checkUser} from "./store/actions";
 import { useDispatch } from "react-redux";
+import {updateNewArrivals} from "./store/actions";
+import ProductDescription from "./components/ProductDescription/productDescription";
+import OrderConfirmed from "./components/OrderConfirmed/orderConfirmed";
+import OrderHistory from "./components/OrderHistory/orderHistory";
+import ConfirmOrder from "./components/ConfirmOrder/confirmOrder";
 
 const Home = () => (
   <>
@@ -43,6 +48,7 @@ function App() {
   }, [pathname, dispatch_action]);
 
   useEffect(() => {
+    dispatch_action(updateNewArrivals())
     dispatch_action(checkUser());
   }, [dispatch_action])
 
@@ -51,9 +57,13 @@ function App() {
       <Header transparentBg={transparent} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/buynow/:pid" element={<ProductDescription />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/confirmOrder/:cart" element={<ConfirmOrder />} />
+        <Route path="/orderConfirmed" element={<OrderConfirmed />} />
+        <Route path="/orderHistory" element={<OrderHistory />} />
       </Routes>
-    </Box>
+    </Box> 
   );
 }
 
