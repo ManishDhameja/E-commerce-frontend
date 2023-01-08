@@ -9,3 +9,6 @@ export * from "./cart/actions";
 
 // order history actions
 export * from "./orderHistory/actions"
+
+// notification actions
+export * from "./notifications/actions";

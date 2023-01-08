@@ -14,10 +14,10 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Quantity } from "../ProductDescription/productDescription";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { OrderCard } from "../ConfirmOrder/confirmOrder";
+import { ColorTag, OrderCard } from "../ConfirmOrder/confirmOrder";
 
 export default function Cart() {
   const { userDetails, loading } = useSelector((state) => state.user);
@@ -27,6 +27,7 @@ export default function Cart() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [processing, setProcessing] = useState(false);
   const lessThan800 = useMediaQuery(`(max-width: 800px)`);
+  const lessThan490 = useMediaQuery(`(max-width: 490px)`);
 
   function placeOrder() {
     setCart([]);
@@ -64,7 +65,7 @@ export default function Cart() {
     <Box sx={{ p: (theme) => theme.spacing(4) }}>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item>
-          <Typography variant="h3" fontWeight="bold">
+          <Typography variant="h4" fontWeight="bold">
             Shopping Cart
           </Typography>
         </Grid>
@@ -73,7 +74,7 @@ export default function Cart() {
           <CircularProgress />
         ) : (
           <Grid item>
-            <Typography variant="h3">{cart.length} items</Typography>
+            <Typography variant="h4">{cart.length} items</Typography>
           </Grid>
         )}
       </Grid>
@@ -123,16 +124,17 @@ export default function Cart() {
         <CircularProgress />
       ) : (
         <Grid container justifyContent="space-between" alignItems="center">
-          <Grid item mb={(theme) => theme.spacing(4)}>
-            <Typography variant="h3" fontWeight="bold">
+          <Grid item mb={lessThan490 ? (theme) => theme.spacing(4) : 0}>
+            <Typography variant="h4" fontWeight="bold">
               Cart total: Rs. {cartTotal}
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid item width={lessThan490 ? "100%" : "auto"}>
             <Button
               variant="contained"
+              fullWidth={lessThan490}
               disabled={cart.length === 0}
-              sx={{ fontSize: "24px", px: (theme) => theme.spacing(10) }}
+              sx={{ fontSize: "18px", px: (theme) => theme.spacing(4) }}
               onClick={placeOrder}
             >
               {processing ? (
@@ -258,6 +260,7 @@ export function CartItem({
   total,
   size,
   color,
+  variant,
   updateCartCost,
   showFeedback,
   updateCart,
@@ -333,22 +336,19 @@ export function CartItem({
               height="100%"
             >
               <Typography variant="h5" fontWeight="bold">
-                {name}
+                {name}{" "}
+                <span>
+                  <ColorTag color={color} label={color} />
+                </span>
               </Typography>
               <Stack direction="row" alignItems="center" columnGap={2}>
                 <Typography variant="body2" color="text.secondary">
                   {size}
                 </Typography>
-                <Avatar
-                  component="span"
-                  sx={{
-                    color: color,
-                    bgcolor: color,
-                    width: "10px",
-                    height: "10px",
-                  }}
-                />
               </Stack>
+              <Typography variant="body2" color="text.secondary">
+                {variant}
+              </Typography>
               {!isOrder && (
                 <Button
                   variant="text"

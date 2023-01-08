@@ -10,156 +10,103 @@ import {
   Paper,
   Select,
   Snackbar,
-  Stack,
+  Stack, ToggleButton, ToggleButtonGroup,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import {Box} from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Fragment, useEffect, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import img4 from "../../images/chart.png";
-import { ItemCard } from "../NewArrivals/newArrivals";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router";
+import {ItemCard} from "../NewArrivals/newArrivals";
+import {useDispatch, useSelector} from "react-redux";
+import {useParams, useNavigate} from "react-router";
 import axios from "axios";
-import { server } from "../../App";
-import { Carousel } from "react-bootstrap";
-import { updateCurrentProduct } from "../../store/products/actions";
-import {
-  addToCart as addProductToCart,
-  hideFeedback,
-} from "../../store/actions";
+import {server} from "../../App";
+import {Carousel} from "react-bootstrap";
+import {updateCurrentProduct} from "../../store/products/actions";
+import {addToCart as addProductToCart, hideFeedback} from "../../store/actions";
 
-export function Quantity({
-  center,
-  initialCount,
-  count,
-  setCount,
-  updateCart,
-}) {
-  useEffect(() => {
-    if (initialCount) setCount(initialCount);
-  }, []);
+export const VARIANTS = {
+  SELECT: "Choose a variant",
+  POLO: "Polo",
+  ROUND: "Round Neck",
+};
 
-  return (
-    <Grid container justifyContent={center && "center"} xs="auto">
-      <Grid item>
-        <IconButton
-          onClick={() => {
-            if (count > 0) setCount(count - 1);
-            if (updateCart) updateCart(count - 1);
-          }}
-        >
-          <RemoveIcon fontSize="small" />
-        </IconButton>
-      </Grid>
-      <Grid
-        item
-        border="1px solid rgba(0, 0, 0, 0.2)"
-        px={(theme) => theme.spacing(2)}
-      >
-        <Typography fontSize="24px">{count}</Typography>
-      </Grid>
-      <Grid item alignItems="center">
-        <IconButton
-          onClick={() => {
-            setCount(count + 1);
-            if (updateCart) updateCart(count + 1);
-          }}
-        >
-          <AddIcon fontSize="small" />
-        </IconButton>
-      </Grid>
-    </Grid>
-  );
-}
+const SIZES = {
+  SELECT: "Pick a size",
+  XS: "XS",
+  S: "S",
+  M: "M",
+  L: "L",
+  XL: "XL",
+  XXL: "XXL",
+};
 
-function Showcase({ imgs }) {
-  return (
-    <Stack rowGap={2}>
-      <Card>
-        <Carousel interval={1000}>
-          {imgs.map((img, i) => (
-            <Carousel.Item key={i}>
-              <img src={img} width="100%" alt={"img"} />
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </Card>
-    </Stack>
-  );
-}
+const COLORS = {
+  BLACK: "black",
+  WHITE: "white",
+};
 
-function SizeDropdown({ sizes, active, setActive }) {
-  // const [active, setActive] = useState(0);
-  return (
-    <Select
-      labelId="demo-simple-select-label"
-      id="demo-simple-select"
-      value={active}
-      onChange={(e) => setActive(e.target.value)}
-      fullWidth
-    >
-      <MenuItem value={"select"}>Size</MenuItem>
-      {sizes.map((item, i) => (
-        <MenuItem value={item} key={i}>
-          {item}
-        </MenuItem>
-      ))}
-    </Select>
-  );
-}
+export const polo_inflation = 175;
 
 export default function ProductDescription() {
-  const { pid } = useParams();
+  const {pid} = useParams();
+  console.log(pid);
   const dispatch_action = useDispatch();
-  const { userDetails } = useSelector((state) => state.user);
+  const {userDetails} = useSelector((state) => state.user);
   const navigate_to = useNavigate();
-  const { new_arrivals, loading: newArrivalsLoading } = useSelector(
-    (state) => state.products.new_arrivals
-  );
+  const {new_arrivals, loading: newArrivalsLoading} = useSelector((state) => state.products.new_arrivals);
   const [showSummary, setShowSummary] = useState(false);
-  const { current_product, loading: currentProductLoading } = useSelector(
-    (state) => state.products.current_product
-  );
-  const [color, setColor] = useState(null);
-  const [size, setSize] = useState("select");
+  const {current_product, loading: currentProductLoading} = useSelector((state) => state.products.current_product);
+  const [shade, setShade] = useState(COLORS.BLACK);
+  const [poloPrice, setPoloPrice] = useState(0);
+  const [size, setSize] = useState(SIZES.SELECT);
+  const [variant, setVariant] = useState(VARIANTS.SELECT);
   const [qty, setQty] = useState(1);
   const lessThan900 = useMediaQuery(`(max-width: 900px)`);
   const [showChart, setShowChart] = useState(false);
+  console.log(current_product)
 
-  const { adding, showFeedback } = useSelector((state) => state.cart);
+  const {adding, showFeedback} = useSelector(state => state.cart);
 
   useEffect(() => {
     dispatch_action(updateCurrentProduct(pid));
   }, [dispatch_action, pid]);
 
+  useEffect(() => {
+    if (variant === VARIANTS.POLO) {
+      setPoloPrice(polo_inflation);
+    } else {
+      setPoloPrice(0);
+    }
+  }, [variant])
+
   function addToCart() {
     if (userDetails === null || Object.keys(userDetails).length === 0) {
       alert("Please sign in to place an order");
     } else {
-      dispatch_action(
-        addProductToCart({
-          uid: userDetails.userId,
-          pid: current_product._id,
-          qty,
-          color,
-          size,
-        })
-      );
+      dispatch_action(addProductToCart({
+        uid: userDetails.userId,
+        pid: current_product._id,
+        qty,
+        color: shade,
+        variant,
+        size,
+      }));
     }
   }
 
   return (
-    <Box sx={{ p: (theme) => theme.spacing(lessThan900 ? 2 : 4) }}>
+    <Box sx={{p: (theme) => theme.spacing(lessThan900 ? 2 : 4)}}>
       {/* <Container> */}
       {currentProductLoading ? (
-        <CircularProgress />
+        <CircularProgress/>
       ) : (
         <Grid container justifyContent="space-between" spacing={5}>
           <Grid item xs={12} md={4.8}>
-            <Showcase imgs={current_product.imgs} />
+            <Showcase imgs={current_product.imgs}/>
           </Grid>
           <Grid item xs={12} md={7}>
             <Typography
@@ -185,7 +132,7 @@ export default function ProductDescription() {
               color="text.primary"
               mb={(theme) => theme.spacing(2)}
             >
-              Rs {current_product.price}
+              Rs {current_product.price + poloPrice}
             </Typography>
             <Typography
               variant="body1"
@@ -195,83 +142,82 @@ export default function ProductDescription() {
               {current_product.desc}
             </Typography>
             {[
-              { title: "Care Instructions", val: "Wash with similar colors" },
-              { title: "Fit Type", val: "Regular Fit" },
-              { title: "Fabric", val: "Cotton" },
-              { title: "Style", val: "Regular" },
-            ].map(({ title, val }, i) => (
+              {title: "Care Instructions", val: "Wash with similar colors"},
+              {title: "Fit Type", val: "Regular Fit"},
+              {title: "Fabric", val: "Cotton"},
+              {title: "Style", val: "Regular"},
+            ].map(({title, val}, i) => (
               <>
-                <Typography variant="body1" fontWeight="bold" component="span">
-                  {title} :{" "}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  component="span"
-                  color="text.secondary"
-                >
-                  {val}
-                </Typography>
-                <br />
+                <Typography variant="body1" fontWeight="bold" component="span">{title} : </Typography>
+                <Typography variant="body1" component="span" color="text.secondary">{val}</Typography>
+                <br/>
               </>
             ))}
-            <Button variant="text" onClick={() => setShowChart(!showChart)}>
-              View size chart
-            </Button>
-            <br />
+            <Grid container alignItems="center" columnGap={4}>
+              <Grid item>
+                <Button sx={{my: 2}} variant="text" onClick={() => setShowChart(!showChart)}>View size chart</Button>
+              </Grid>
+              <Grid item>
+                <Quantity count={qty} setCount={(newVal) => setQty(newVal)}/>
+              </Grid>
+            </Grid>
+            <br/>
             <Grid
               container
               justifyContent="flex-start"
               alignItems="center"
               spacing={2}
             >
-              <Grid item xs={12} md={6}>
-                <SizeDropdown
-                  sizes={current_product.sizes}
+              <Grid item xs={12} sm={4}>
+                <Dropdown
+                  values={SIZES}
                   active={size}
                   setActive={(newVal) => setSize(newVal)}
                 />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Quantity count={qty} setCount={(newVal) => setQty(newVal)} />
+                <br/>
+                <br/>
+                <Dropdown
+                  values={VARIANTS}
+                  active={variant}
+                  setActive={(newVal) => setVariant(newVal)}
+                />
               </Grid>
             </Grid>
-            <Grid
-              container
-              alignItems="center"
-              mt={(theme) => theme.spacing(2)}
-            >
-              {current_product.colors.map((item, i) => (
-                <Grid item key={i}>
-                  <IconButton onClick={() => setColor(item)}>
-                    <Avatar
-                      sx={{
-                        bgcolor: item,
-                        color: item,
-                        border: color === item ? "5px solid red" : "none",
-                      }}
-                    />
-                  </IconButton>
-                </Grid>
-              ))}
+            <br/>
+            <Grid container alignItems="center" columnGap={2}>
+              <Typography fontWeight="bold">
+                Color:
+              </Typography>
+              <Color active={shade} onChange={(e, newVal) => {
+                if (newVal !== null) setShade(newVal);
+              }}/>
             </Grid>
             <Button
-              disabled={qty === 0 || size === "select"}
+              disabled={
+                qty === 0 ||
+                size === SIZES.SELECT ||
+                variant === VARIANTS.SELECT
+              }
               variant="contained"
-              sx={{ mt: (theme) => theme.spacing(2), fontSize: "18px" }}
+              sx={{mt: (theme) => theme.spacing(2), fontSize: "18px"}}
               onClick={() => {
-                userDetails === null || Object.keys(userDetails).length === 0
+                (userDetails === null || Object.keys(userDetails).length === 0)
                   ? alert("Please sign in to place an order")
                   : setShowSummary(true);
               }}
             >
               {adding ? (
-                <CircularProgress sx={{ color: "white" }} />
+                <CircularProgress sx={{color: "white"}}/>
               ) : (
                 "Buy now"
               )}
             </Button>
             <Button
-              disabled={qty === 0 || size === "select"}
+              disabled={
+                qty === 0 ||
+                size === SIZES.SELECT ||
+                variant === VARIANTS.SELECT
+              }
               variant="outlined"
               sx={{
                 mt: (theme) => theme.spacing(2),
@@ -280,14 +226,14 @@ export default function ProductDescription() {
               }}
               onClick={addToCart}
             >
-              {adding ? <CircularProgress /> : "Add to cart"}
+              {adding ? <CircularProgress/> : "Add to cart"}
             </Button>
           </Grid>
         </Grid>
       )}
       <Box>
         <Typography
-          variant="h3"
+          variant="h4"
           fontWeight="bold"
           my={(theme) => theme.spacing(4)}
           mt={(theme) => theme.spacing(15)}
@@ -301,12 +247,12 @@ export default function ProductDescription() {
           spacing={4}
         >
           {newArrivalsLoading ? (
-            <CircularProgress />
+            <CircularProgress/>
           ) : (
             new_arrivals.map((item, i) => (
               <Fragment key={i}>
                 {i <= 3 && (
-                  <Grid item sm={12} md={6} lg={4}>
+                  <Grid item sm={12} md={6} lg={3}>
                     <ItemCard {...item} />
                   </Grid>
                 )}
@@ -318,10 +264,10 @@ export default function ProductDescription() {
       {/* </Container> */}
       <Snackbar
         open={showFeedback}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={3000}
+        anchorOrigin={{vertical: "top", horizontal: "right"}}
+        autoHideDuration={1200}
         onClose={() => dispatch_action(hideFeedback())}
-        sx={{ mt: "7vh" }}
+        sx={{mt: "7vh"}}
       >
         <Paper
           sx={{
@@ -330,21 +276,27 @@ export default function ProductDescription() {
             boxShadow: (theme) => theme.shadows[4],
             bgcolor: "red",
             color: "white",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          Item added to cart{" "}
+          <Typography>
+            Item added to cart{" "}
+          </Typography>
           <Button
             variant="contained"
             color="info"
-            sx={{ ml: (theme) => theme.spacing(10) }}
+            sx={{ml: (theme) => theme.spacing(10)}}
             onClick={() => navigate_to("/cart")}
           >
             view cart
           </Button>
         </Paper>
       </Snackbar>
-      <Dialog open={showChart} onClose={() => setShowChart(false)}>
-        <img src={img4} />
+      <Dialog fullWidth maxWidth="xl" open={showChart} onClose={() => setShowChart(false)}>
+        <img alt="size chart" src={img4}/>
       </Dialog>
       {userDetails !== null && (
         <OrderSummary
@@ -352,9 +304,10 @@ export default function ProductDescription() {
           cleanup={() => setShowSummary(false)}
           _id={current_product._id}
           name={current_product.name}
-          price={current_product.price}
+          price={current_product.price + poloPrice}
           qty={qty}
-          color={color}
+          color={shade}
+          variant={variant}
           size={size}
           uid={userDetails.userId}
           description={current_product.desc}
@@ -364,18 +317,119 @@ export default function ProductDescription() {
   );
 }
 
+export function Color({active, onChange}) {
+  return (
+    <ToggleButtonGroup
+      value={active}
+      exclusive
+      onChange={onChange}
+      color="primary"
+    >
+      <ToggleButton value={COLORS.BLACK}>
+        Black
+      </ToggleButton>
+      <ToggleButton value={COLORS.WHITE}>
+        White
+      </ToggleButton>
+    </ToggleButtonGroup>
+  );
+}
+
+export function Quantity({
+                           center,
+                           initialCount,
+                           count,
+                           setCount,
+                           updateCart,
+                         }) {
+
+  useEffect(() => {
+    if (initialCount) setCount(initialCount);
+  }, []);
+
+  return (
+    <Grid container justifyContent={center && "center"}>
+      <Grid item>
+        <IconButton
+          onClick={() => {
+            if (count > 0) setCount(count - 1);
+            if (updateCart) updateCart(count - 1);
+          }}
+        >
+          <RemoveIcon fontSize="small"/>
+        </IconButton>
+      </Grid>
+      <Grid
+        item
+        border="1px solid rgba(0, 0, 0, 0.2)"
+        px={(theme) => theme.spacing(2)}
+      >
+        <Typography fontSize="24px">{count}</Typography>
+      </Grid>
+      <Grid item alignItems="center">
+        <IconButton
+          onClick={() => {
+            setCount(count + 1);
+            if (updateCart) updateCart(count + 1);
+          }}
+        >
+          <AddIcon fontSize="small"/>
+        </IconButton>
+      </Grid>
+    </Grid>
+  );
+}
+
+function Showcase({imgs}) {
+  return (
+    <Stack rowGap={2}>
+      <Card sx={{border: "none"}}>
+        <Carousel interval={1000}>
+          {imgs.map((img, i) => (
+            <Carousel.Item key={i}>
+              <img
+                src={img}
+                width="100%"
+                alt={"img"}/>
+
+            </Carousel.Item>
+          ))}
+        </Carousel>
+      </Card>
+    </Stack>
+  );
+}
+
+function Dropdown({values, active, setActive}) {
+  return (
+    <Select
+      value={active}
+      onChange={(e) => setActive(e.target.value)}
+      fullWidth
+      displayEmpty
+    >
+      {Object.keys(values).map((key, i) => (
+        <MenuItem value={values[key]} key={i}>
+          {values[key]}
+        </MenuItem>
+      ))}
+    </Select>
+  );
+}
+
 export function OrderSummary({
-  visible,
-  cleanup,
-  name,
-  qty,
-  price,
-  _id,
-  uid,
-  color,
-  size,
-  description,
-}) {
+                               visible,
+                               cleanup,
+                               name,
+                               qty,
+                               price,
+                               _id,
+                               uid,
+                               color,
+                               variant,
+                               size,
+                               description,
+                             }) {
   const navigate_to = useNavigate();
   const [processing, setProcessing] = useState(false);
 
@@ -389,7 +443,7 @@ export function OrderSummary({
       onClose={handleClose}
       maxWidth="sm"
       fullWidth
-      PaperProps={{ sx: { p: (theme) => theme.spacing(4) } }}
+      PaperProps={{sx: {p: (theme) => theme.spacing(4)}}}
     >
       <Typography
         variant="h4"
@@ -409,7 +463,7 @@ export function OrderSummary({
         <Typography variant="h5" fontWeight="bold" color="text.primary">
           {name}
         </Typography>
-        <br />
+        <br/>
         <Typography
           variant="body1"
           color="text.primary"
@@ -417,11 +471,17 @@ export function OrderSummary({
         >
           {description}
         </Typography>
-        <Typography variant="body1" color="text.primary">
-          Rs {price}
+        <Typography variant="body1" color="text.primary" fontWeight="bold">
+          MRP: <Typography variant="body1" component="span" fontWeight="bolder" color="green"> ₹ {price} </Typography>
         </Typography>
-        <Typography variant="body1" color="text.primary">
+        <Typography variant="body1" color="text.primary" fontWeight="bold">
           Quantity: {qty}
+        </Typography>
+        <Typography variant="body1" color="text.primary" fontWeight="bold">
+          Color: {color}
+        </Typography>
+        <Typography variant="body1" color="text.primary" fontWeight="bold">
+          Variant: {variant}
         </Typography>
         <Typography
           variant="h6"
@@ -429,7 +489,7 @@ export function OrderSummary({
           color="text.primary"
           my={(theme) => theme.spacing(2)}
         >
-          Net payable amount: {qty * price}
+          Net payable amount: <Typography variant="h5" component="span" fontWeight="bolder" color="green"> ₹ {qty * price} </Typography>
         </Typography>
         <Button
           variant="contained"
@@ -439,7 +499,7 @@ export function OrderSummary({
             let cart = [];
             axios
               .get(server + "product/findById?pid=" + _id)
-              .then(({ data }) => {
+              .then(({data}) => {
                 const [item] = data;
                 delete item.colors;
                 delete item.sizes;
@@ -448,15 +508,16 @@ export function OrderSummary({
                 item.quantity = qty;
                 item.color = color;
                 item.size = size;
-                item.total = qty * item.price;
+                item.total = qty * price;
+                item.variant = variant;
                 cart.push(item);
                 navigate_to(
-                  "/confirmOrder/" + encodeURIComponent(JSON.stringify(cart))
+                  "/confirmOrder/" + encodeURIComponent(JSON.stringify(cart)),
                 );
               });
           }}
         >
-          {processing ? <CircularProgress /> : "place order"}
+          {processing ? <CircularProgress/> : "place order"}
         </Button>
       </Stack>
     </Dialog>

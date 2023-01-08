@@ -6,6 +6,7 @@ import theme from "./theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import store from "./store";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <ThemeProvider theme={theme}>

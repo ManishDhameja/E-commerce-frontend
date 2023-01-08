@@ -1,9 +1,9 @@
 import axios from "axios";
 import {server} from "../App";
+import {polo_inflation, VARIANTS} from "../components/ProductDescription/productDescription";
 
 export const placeOrder = async payload => {
   try {
-
     return await axios
       .post( server + "orders/addOrder", {...payload})
       .then(({ data }) => {
@@ -34,7 +34,7 @@ export const fetchOrderHistory = async (uid) => {
 }
 
 export const addToCart = async (details) => {
-  const {uid, pid, qty, color, size} = details;
+  const {uid, pid, qty, color, size, variant} = details;
   if (
     localStorage.getItem("cart_" + uid) === null
   ) {
@@ -46,11 +46,19 @@ export const addToCart = async (details) => {
         delete item.colors;
         delete item.sizes;
         delete item._id;
+
         item.id = 0;
         item.quantity = qty;
         item.color = color;
         item.size = size;
+        item.variant = variant;
+
+        if (variant === VARIANTS.POLO) {
+          item.price += polo_inflation;
+        }
+
         item.total = qty * item.price;
+
         cart.push(item);
         localStorage.setItem(
           "cart_" + uid,
@@ -72,11 +80,19 @@ export const addToCart = async (details) => {
         delete item.colors;
         delete item.sizes;
         delete item._id;
+
         item.id = cart.length;
         item.quantity = qty;
         item.color = color;
         item.size = size;
+        item.variant = variant;
+
+        if (variant === VARIANTS.POLO) {
+          item.price += polo_inflation;
+        }
+
         item.total = qty * item.price;
+
         cart.push(item);
         localStorage.setItem(
           "cart_" + uid,
@@ -118,13 +134,12 @@ export const signIn = async (formdata) => {
     return await axios
       .post(server + "auth/signin", formdata)
       .then(({data}) => {
-        return data;
+        return {status: 'success', ...data};
       });
   } catch (error) {
     if (error) {
       console.log("Unable to reach server: ");
-      console.error(error);
-      throw error;
+      return {status: "failed", ...error};
     }
   }
 };
@@ -138,8 +153,6 @@ export const register = async (formdata) => {
       });
   } catch (error) {
     if (error) {
-      console.log("Unable to reach server ");
-      console.error(error);
       throw error;
     }
   }

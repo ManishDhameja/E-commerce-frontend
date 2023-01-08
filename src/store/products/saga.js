@@ -11,6 +11,7 @@ import {
 function* onUpdateCurrentProduct({payload}) {
   try {
     const response = yield call(findProductById, payload);
+    console.log(payload, response);
     yield put(updateCurrentProductSuccess(response));
   } catch (e) {
     yield put(updateCurrentProductFail(e));

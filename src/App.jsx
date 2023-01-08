@@ -15,12 +15,13 @@ import ProductDescription from "./components/ProductDescription/productDescripti
 import OrderConfirmed from "./components/OrderConfirmed/orderConfirmed";
 import OrderHistory from "./components/OrderHistory/orderHistory";
 import ConfirmOrder from "./components/ConfirmOrder/confirmOrder";
+import NotificationContainer from "./components/Notifications/notification";
+
 
 const Home = () => (
   <>
     <MainSection />
     <NewArrivals />
-    <Footer />
   </>
 );
 
@@ -55,6 +56,7 @@ function App() {
   return (
     <Box>
       <Header transparentBg={transparent} />
+      <Box sx={{minHeight: "100vh"}} >
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/buynow/:pid" element={<ProductDescription />} />
@@ -63,7 +65,10 @@ function App() {
         <Route path="/orderConfirmed" element={<OrderConfirmed />} />
         <Route path="/orderHistory" element={<OrderHistory />} />
       </Routes>
-    </Box> 
+      <NotificationContainer />
+      </Box>
+      <Footer />
+    </Box>
   );
 }
 

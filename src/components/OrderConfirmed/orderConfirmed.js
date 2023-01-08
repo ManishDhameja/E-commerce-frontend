@@ -1,8 +1,14 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function OrderConfirmed() {
   const navigate_to = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <Stack justifyContent="center" alignItems="center">
       <Typography

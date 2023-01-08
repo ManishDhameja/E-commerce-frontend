@@ -6,30 +6,34 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  TextField,
   Stack,
+  TextField,
   Toolbar,
   Typography,
-  CircularProgress,
   useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
 import Headroom from "react-headroom";
-import { useNavigate, useLocation } from "react-router";
-import { useSelector, useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import ProfileAvatar from "../profileAvatar/profileAvatar";
 import MenuIcon from "@mui/icons-material/Menu";
 import { MobileDrawer } from "../MainSection/mainSection";
 import logo from "../../images/logo.png";
 import { register, signIn } from "../../store/actions";
+import { LoadingModal } from "../Notifications/notification";
 
-export const Logo = () => {
+export const Logo = ({ height = "30px", maxHeight }) => {
   const navigate_to = useNavigate();
   return (
     <img
       src={logo}
       onClick={() => navigate_to("/")}
-      style={{ cursor: "pointer", height: "40px" }}
+      style={{
+        cursor: "pointer",
+        height,
+        maxHeight: maxHeight ? maxHeight : height,
+      }}
       alt={"img"}
     />
   );
@@ -40,16 +44,16 @@ export default function Header({ transparentBg }) {
   const navigate_to = useNavigate();
   const { pathname } = useLocation();
   const isOpen = Boolean(anchorEl);
-
-  function handleClose() {
-    setAnchorEl(null);
-  }
-
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { userDetails, loading } = useSelector((state) => state.user);
   const lessThan464 = useMediaQuery(`(max-width: 464px)`);
   const [showDrawer, setShowDrawer] = useState(false);
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
+
   return (
     <Headroom>
       <AppBar
@@ -113,12 +117,7 @@ export default function Header({ transparentBg }) {
         </Toolbar>
         <Menu anchorEl={anchorEl} open={isOpen} onClose={handleClose}>
           {[
-            ["t-shirts", "/t-shirts"],
-            ["caps", "/caps"],
-            ["bands", "/bands"],
-            ["mugs", "/mugs"],
-            ["diaries", "/diaries"],
-            ["pens", "/pens"],
+            ["t-shirts", "/t-shirts"]
           ].map((item, i) => (
             <MenuItem
               key={i}
@@ -142,6 +141,7 @@ export default function Header({ transparentBg }) {
           updateLogin={() => setShowLogin(true)}
           updateRegister={() => setShowRegister(true)}
         />
+        {loading && <LoadingModal />}
       </AppBar>
     </Headroom>
   );
@@ -149,7 +149,6 @@ export default function Header({ transparentBg }) {
 
 export function LoginModal({ visible, cleanup }) {
   const dispatch = useDispatch();
-  const [processing, setProcessing] = useState(false);
 
   function handleClose() {
     cleanup();
@@ -166,8 +165,8 @@ export function LoginModal({ visible, cleanup }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setProcessing(true);
     dispatch(signIn(formdata));
+    cleanup();
   }
 
   return (
@@ -206,11 +205,7 @@ export function LoginModal({ visible, cleanup }) {
             type="password"
           />
           <Button fullWidth type="submit" variant="contained">
-            {processing ? (
-              <CircularProgress sx={{ color: "white" }} />
-            ) : (
-              "sign in"
-            )}
+            sign in
           </Button>
         </Stack>
       </form>
@@ -220,7 +215,6 @@ export function LoginModal({ visible, cleanup }) {
 
 export function RegisterModal({ visible, cleanup }) {
   const dispatch = useDispatch();
-  const [processing, setProcessing] = useState(false);
 
   function handleClose() {
     cleanup();
@@ -240,6 +234,7 @@ export function RegisterModal({ visible, cleanup }) {
   function handleSubmit(e) {
     e.preventDefault();
     dispatch(register(formdata));
+    cleanup();
   }
 
   return (
@@ -294,11 +289,7 @@ export function RegisterModal({ visible, cleanup }) {
             type="password"
           />
           <Button fullWidth type="submit" variant="contained">
-            {processing ? (
-              <CircularProgress sx={{ color: "white" }} />
-            ) : (
-              "register"
-            )}
+            register
           </Button>
         </Stack>
       </form>
