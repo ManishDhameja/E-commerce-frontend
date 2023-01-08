@@ -25,7 +25,7 @@ const Home = () => (
   </>
 );
 
-export const server = 'http://localhost:8000/'; 
+export const server = 'https://slate-gray-macaw-kilt.cyclic.app/'; 
 
 function App() {
   const [transparent, setTransparent] = useState(true);
