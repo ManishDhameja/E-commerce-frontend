@@ -28,8 +28,8 @@ function userReducer(state = INIT_STATE, action) {
       localStorage.setItem("user", JSON.stringify({...action.payload}));
       window.location.replace("/");
       return {
-        ...state,
-        userDetails: action.payload,
+        ...state, 
+        userDetails: action.payload, 
         loading: false
       };
 

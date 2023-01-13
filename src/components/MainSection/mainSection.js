@@ -10,9 +10,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import bg from "../../images/hero2.jpg";
 import portrait from "../../images/hero.jpg";
-import logo from "../../images/logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +19,7 @@ import { logOut } from "../../store/actions";
 
 export function MobileDrawer({
   visible,
-  cleanup,
+  cleanup, 
   updateLogin,
   updateRegister,
 }) {
