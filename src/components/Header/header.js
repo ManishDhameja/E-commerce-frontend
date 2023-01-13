@@ -4,8 +4,6 @@ import {
   Dialog,
   Grid,
   IconButton,
-  Menu,
-  MenuItem,
   Stack,
   TextField,
   Toolbar,
@@ -115,21 +113,6 @@ export default function Header({ transparentBg }) {
             })()}
           </Grid>
         </Toolbar>
-        <Menu anchorEl={anchorEl} open={isOpen} onClose={handleClose}>
-          {[
-            ["t-shirts", "/t-shirts"]
-          ].map((item, i) => (
-            <MenuItem
-              key={i}
-              onClick={() => {
-                navigate_to(item[1]);
-                handleClose();
-              }}
-            >
-              {item[0]}
-            </MenuItem>
-          ))}
-        </Menu>
         <LoginModal visible={showLogin} cleanup={() => setShowLogin(false)} />
         <RegisterModal
           visible={showRegister}
@@ -225,6 +208,7 @@ export function RegisterModal({ visible, cleanup }) {
     pwd: "",
     name: "",
     add: "",
+    confirmPwd:""
   });
 
   function handleFields(e) {
@@ -288,6 +272,17 @@ export function RegisterModal({ visible, cleanup }) {
             label="Password"
             type="password"
           />
+          <TextField
+            required
+            fullWidth
+            value={formdata.confirmPwd}
+            onChange={handleFields}
+            name="confirmPwd"
+            label="confirmPassword"
+            type="password"
+          />
+          {(formdata.pwd !== formdata.confirmPwd) 
+          }
           <Button fullWidth type="submit" variant="contained">
             register
           </Button>

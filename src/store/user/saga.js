@@ -5,7 +5,7 @@ import {CHECK_USER, REGISTER, SIGN_IN} from "./actionTypes";
 import {errorNotification, successNotification} from "../notifications/actions";
 import {NotificationBuilder} from "../../components/Notifications/notification";
 
-function* signin({payload}) {
+function* signin({payload}) { 
   try {
     const response = yield call(signIn, payload);
     if (response.status === "success") {

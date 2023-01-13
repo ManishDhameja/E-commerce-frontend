@@ -59,7 +59,7 @@ export default function NewArrivals() {
   return (
     <Box
       sx={{
-        p: (theme) => theme.spacing(lessThan1250 ? (lessThan600 ? 2 : 4) : 4),
+        p: (theme) => theme.spacing(lessThan1250 ? (lessThan600 ? 2 : 4) : 4), 
       }}
     >
       <Divider>
