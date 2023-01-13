@@ -1,4 +1,5 @@
 import {
+  Alert,
   AppBar,
   Button,
   Dialog,
@@ -203,6 +204,7 @@ export function RegisterModal({ visible, cleanup }) {
     cleanup();
   }
 
+  const [err, setErr] = useState("")
   const [formdata, setFormdata] = useState({
     email: "",
     pwd: "",
@@ -217,8 +219,12 @@ export function RegisterModal({ visible, cleanup }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    dispatch(register(formdata));
-    cleanup();
+    if (formdata.pwd !== formdata.confirmPwd) {
+      setErr("Passwords do not match.");
+    } else {
+      dispatch(register(formdata));
+      cleanup();
+    }
   }
 
   return (
@@ -281,8 +287,7 @@ export function RegisterModal({ visible, cleanup }) {
             label="confirmPassword"
             type="password"
           />
-          {(formdata.pwd !== formdata.confirmPwd) 
-          }
+          { err && <Alert severity="error">{err}</Alert> }
           <Button fullWidth type="submit" variant="contained">
             register
           </Button>
